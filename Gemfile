@@ -7,5 +7,5 @@ gemspec
 gem "rubocop-rails-omakase", require: false
 
 group :development, :test do
-  gem "rspec-rails", "~> 6.1"
+  gem "rspec-rails", "~> 8.1"
 end
