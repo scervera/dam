@@ -40,6 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "exifr", "~> 1.3"
   spec.add_dependency "mini_exiftool", "~> 2.10"
   # AI auto-tagging and face recognition (optional features, configured by ENV).
-  spec.add_dependency "ruby-openai", "~> 7.0"
+  spec.add_dependency "ruby-openai", ">= 7", "< 9"
   spec.add_dependency "aws-sdk-rekognition", "~> 1.0"
 end
