@@ -1,0 +1,33 @@
+# Connects the DAM engine to this app. Every setting is described in the dam gem's
+# lib/dam/configuration.rb.
+Dam.configure do |config|
+  config.tenant_class = "Tenant"
+  config.user_class = "User"
+
+  # Your API base controller. It must provide authenticate_user!, current_user,
+  # tenant_scope(relation), render_success(data, status) and render_error(message, status),
+  # and should respond to Pundit::NotAuthorizedError (e.g. 403).
+  config.parent_controller = "ApplicationController"
+
+  # Where the current tenant and user live during a request (defaults: Dam::Current).
+  # config.current_tenant = -> { Current.tenant }
+  # config.set_current_tenant = ->(tenant) { Current.tenant = tenant }
+  # config.current_user = -> { Current.user }
+  # config.set_current_user = ->(user) { Current.user = user }
+
+  # Token login for GET /assets/:id/stream (<video> elements can't send headers).
+  config.authenticate_token = ->(token) { User.find_by(api_token: token) }
+  # config.tenant_for_request = ->(user, request) { user.tenant }
+
+  # config.soft_delete_enabled = -> { true }
+  # config.asset_retention_days = -> { 30 }
+end
+
+# Optional events (ActiveSupport::Notifications):
+#   "asset_created.dam"     { asset: }     e.g. usage metering
+#   "asset_destroying.dam"  { asset: }     remove rows that reference the asset first
+#   "ai_usage.dam"          { tenant:, input_tokens:, output_tokens: }
+#
+# ActiveSupport::Notifications.subscribe("asset_created.dam") do |event|
+#   Rails.logger.info "DAM asset created: #{event.payload[:asset].id}"
+# end

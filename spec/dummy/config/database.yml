@@ -1,0 +1,16 @@
+# PostgreSQL (the DAM uses jsonb). DATABASE_URL overrides this, e.g. in CI.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  username: <%= ENV.fetch("DATABASE_USERNAME") { ENV["USER"] } %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "") %>
+  pool: 5
+
+development:
+  <<: *default
+  database: dam_dummy_development
+
+test:
+  <<: *default
+  database: dam_dummy_test
