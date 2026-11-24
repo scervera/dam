@@ -1,6 +1,6 @@
 module Dam
   class WatchedFolderScanJob < ApplicationJob
-    queue_as :default
+    queue_as { Dam.config.queue_name(:default) }
 
     def perform(watched_folder_id)
       Rails.logger.info "🚀 WATCHED_FOLDER_SCAN_JOB: Starting scan for folder ID: #{watched_folder_id}"

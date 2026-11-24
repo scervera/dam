@@ -18,4 +18,6 @@ RSpec.configure do |config|
   config.include ActiveJob::TestHelper
   config.include DamSpecHelpers
   config.after { Dam::Current.reset }
+  # Specs that call real AI provider APIs run only on request (see spec/live).
+  config.filter_run_excluding :live unless ENV["DAM_LIVE_AI"] == "1"
 end

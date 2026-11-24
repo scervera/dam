@@ -203,7 +203,7 @@ module Dam
       return unless image?
       return unless file.attached?
       return if ai_auto_tagged_at.present?
-      return unless ENV.fetch("DAM_AI_AUTO_TAG_ENABLED", "true").to_s.downcase.in?(%w[true 1 yes])
+      return unless Dam.ai_tagging_enabled?
 
       Dam::Ai::AutoTaggingJob.perform_later(id)
     rescue StandardError => e

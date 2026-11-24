@@ -16,8 +16,16 @@ module Dam
   #   "asset_created.dam"     payload { asset: }  after an asset is created and committed
   #   "asset_destroying.dam"  payload { asset: }  before an asset row is deleted; remove
   #                                               rows that reference it (errors abort)
-  #   "ai_usage.dam"          payload { tenant:, input_tokens:, output_tokens: }
+  #   "ai_usage.dam"          payload { tenant:, input_tokens:, output_tokens:, provider:,
+  #                                     model: } after each AI request
   class Configuration
+    DEFAULT_QUEUE_NAMES = {
+      default: :default,       # thumbnails, derivatives, watched-folder scans
+      ai: :default,            # auto-tagging and face detection
+      purge: :default,         # recycle-bin purges
+      scheduler: :default      # Dam::WatchedFolderSchedulerJob
+    }.freeze
+
     # Class names (strings) of the host's tenant and user models.
     attr_accessor :tenant_class, :user_class
 
@@ -62,6 +70,24 @@ module Dam
     # ("<prefix>-tenant-<id>").
     attr_accessor :face_collection_prefix
 
+    # Active Job queue for each kind of DAM job; keys as in DEFAULT_QUEUE_NAMES. Missing
+    # keys fall back to the defaults, so a host can set only the ones it changes:
+    #   config.queue_names = { purge: :low_priority }
+    attr_reader :queue_names
+
+    # How Dam::WatchedFolderSchedulerJob repeats:
+    #   :self_enqueue  each run enqueues the next one 30 seconds later (start it once, e.g.
+    #                  from an initializer)
+    #   :external      each run is a single pass; the host schedules it, e.g. a Solid Queue
+    #                  recurring task or cron
+    attr_accessor :watched_folder_scheduler
+
+    # AI auto-tagging provider. nil (the default) builds one from ENV (DAM_AI_PROVIDER,
+    # DAM_AI_MODEL, DAM_AI_API_KEY, DAM_AI_BASE_URL; see Dam::Ai::Providers.from_env).
+    # Otherwise :openai, :openai_compatible or :anthropic (configured from ENV), or any
+    # object that implements Dam::Ai::Providers::Base#analyze_image.
+    attr_accessor :ai_provider
+
     # ->(&request) { request.call }: wraps every AI request, e.g. for rate limiting.
     attr_accessor :ai_request_wrapper
     # Exception classes (or names) raised by ai_request_wrapper that are worth retrying.
@@ -87,6 +113,17 @@ module Dam
       @face_collection_prefix = -> { ENV.fetch("AWS_REKOGNITION_COLLECTION_ID", "dam-faces") }
       @ai_request_wrapper = ->(&request) { request.call }
       @ai_retryable_errors = []
+      @queue_names = DEFAULT_QUEUE_NAMES.dup
+      @watched_folder_scheduler = :self_enqueue
+      @ai_provider = nil
+    end
+
+    def queue_names=(names)
+      @queue_names = DEFAULT_QUEUE_NAMES.merge(names.to_h.transform_keys(&:to_sym))
+    end
+
+    def queue_name(kind)
+      queue_names.fetch(kind.to_sym)
     end
   end
 
@@ -113,6 +150,18 @@ module Dam
 
     def current_user=(user)
       config.set_current_user.call(user)
+    end
+
+    # True when AI auto-tagging is switched on and a provider is configured.
+    def ai_tagging_enabled?
+      ENV.fetch("DAM_AI_AUTO_TAG_ENABLED", "true").to_s.downcase.in?(%w[true 1 yes]) &&
+        Dam::Ai::Providers.configured?
+    end
+
+    # True when face detection (AWS Rekognition) is switched on. Credentials come from
+    # AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY or the AWS default chain (e.g. an IAM role).
+    def face_detection_enabled?
+      ENV.fetch("DAM_FACE_DETECTION_ENABLED", "false").to_s.downcase.in?(%w[true 1 yes])
     end
 
     # Publishes a DAM event ("#{name}.dam") to ActiveSupport::Notifications subscribers.

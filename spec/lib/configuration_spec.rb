@@ -29,4 +29,23 @@ RSpec.describe Dam::Configuration do
     expect(Dam.user_class).to eq(User)
     expect(Dam::Asset.reflect_on_association(:user).klass).to eq(User)
   end
+
+  it "uses the default queue for every job kind unless the host overrides some" do
+    expect(config.queue_names.values.uniq).to eq([ :default ])
+
+    config.queue_names = { "purge" => :low_priority }
+
+    expect(config.queue_name(:purge)).to eq(:low_priority)
+    expect(config.queue_name(:ai)).to eq(:default)
+  end
+
+  it "routes each job to its configured queue" do
+    allow(Dam.config).to receive(:queue_names).and_return(
+      Dam::Configuration::DEFAULT_QUEUE_NAMES.merge(purge: :purges, ai: :ai_jobs)
+    )
+
+    expect(Dam::PurgeAssetJob.new.queue_name).to eq("purges")
+    expect(Dam::Ai::AutoTaggingJob.new.queue_name).to eq("ai_jobs")
+    expect(Dam::AssetThumbnailJob.new.queue_name).to eq("default")
+  end
 end

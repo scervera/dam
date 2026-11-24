@@ -346,6 +346,10 @@ module Dam::Api
 
       def auto_tag
         authorize @asset, :tag?
+        unless Dam.ai_tagging_enabled?
+          render_error("AI auto-tagging is not configured", :unprocessable_entity)
+          return
+        end
         unless @asset.image?
           render_error("Only image assets can be auto-tagged", :unprocessable_entity)
           return

@@ -89,7 +89,7 @@ module Dam
       private
 
       def face_detection_enabled?
-        ENV.fetch("DAM_FACE_DETECTION_ENABLED", "false").to_s.downcase.in?(%w[true 1 yes])
+        Dam.face_detection_enabled?
       end
 
       def face_detection_engine

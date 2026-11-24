@@ -1,6 +1,6 @@
 module Dam
   class PurgeAssetJob < ApplicationJob
-    queue_as :backup_replication
+    queue_as { Dam.config.queue_name(:purge) }
 
     discard_on ActiveRecord::RecordNotFound
 
