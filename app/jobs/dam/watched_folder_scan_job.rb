@@ -26,10 +26,11 @@ module Dam
         raise "Folder is not accessible: #{folder.path}"
       end
 
-      # Get all files in directory (root level only)
-      files = Dir.glob(File.join(folder.path, "*"))
+      # Files in the folder itself (not subfolders). Dir.children, unlike Dir.glob, treats
+      # characters like [ and { in the folder path literally.
+      files = Dir.children(folder.path).sort
+                 .map { |name| File.join(folder.path, name) }
                  .select { |f| File.file?(f) }
-                 .reject { |f| File.directory?(f) }
                  .select { |f| File.size(f) <= folder.max_file_size_bytes }
 
       scan.update!(files_found: files.count)
@@ -53,12 +54,14 @@ module Dam
       )
       Rails.logger.info "📊 WATCHED_FOLDER_SCAN_JOB: Updated folder statistics - files found: #{scan.files_found}, processed: #{scan.files_processed}, errors: #{scan.errors_count}"
 
-      # Create completion notification
-      Dam::WatchFolderNotification.create_scan_completed(
-        folder,
-        scan.files_processed,
-        scan.errors_count
-      )
+      # Only notify when something happened; a quiet folder is scanned every few minutes.
+      if scan.files_processed.positive? || scan.errors_count.positive?
+        Dam::WatchFolderNotification.create_scan_completed(
+          folder,
+          scan.files_processed,
+          scan.errors_count
+        )
+      end
 
     rescue => e
       Rails.logger.error "WatchedFolderScanJob failed for folder #{folder.id}: #{e.message}"
@@ -82,11 +85,12 @@ module Dam
   def process_file_batch(files, folder, scan)
     files.each do |file_path|
       begin
-        import_file(file_path, folder, scan)
-        scan.increment_files_processed!
-
-          # Create success notification
+        if import_file(file_path, folder, scan) == :imported
+          scan.increment_files_processed!
           Dam::WatchFolderNotification.create_file_imported(folder, file_path)
+        else
+          scan.increment_files_skipped!
+        end
 
       rescue => e
         Rails.logger.error "Failed to import file #{file_path}: #{e.message}"
@@ -99,33 +103,34 @@ module Dam
     end
   end
 
+  # Imports one file. Returns :imported, or :skipped for files that are too large, of an
+  # unsupported type, or already imported.
   def import_file(file_path, folder, scan)
-    Rails.logger.info "🔍 WATCHED_FOLDER_SCAN_JOB: Starting import_file for #{File.basename(file_path)}"
+    keep_originals = Dam.config.watched_folder_keep_originals
+    file_name = File.basename(file_path)
 
-    # Check file size before any processing (uses configurable limit, default 1GB)
     file_size = File.size(file_path)
     max_file_size = Dam::Asset.max_file_size_limit
-    Rails.logger.info "📏 WATCHED_FOLDER_SCAN_JOB: File size check - #{File.basename(file_path)}: #{file_size} bytes (#{(file_size / 1.megabyte).round(2)} MB), limit: #{(max_file_size / 1.gigabyte.to_f).round(2)} GB"
-
     if file_size > max_file_size
-      Rails.logger.warn "📏 WATCHED_FOLDER_SCAN_JOB: Skipping oversized file #{File.basename(file_path)} (#{(file_size / 1.megabyte).round(2)} MB > #{(max_file_size / 1.gigabyte.to_f).round(2)} GB limit)"
-      # Delete the oversized file to clean up the watched folder
-      File.delete(file_path)
-      Rails.logger.info "🗑️ WATCHED_FOLDER_SCAN_JOB: Deleted oversized file #{File.basename(file_path)} from watched folder"
-      return
+      Rails.logger.warn "WATCHED_FOLDER_SCAN_JOB: Skipping #{file_name}: #{(file_size / 1.megabyte.to_f).round(1)} MB is over the #{(max_file_size / 1.gigabyte.to_f).round(2)} GB limit"
+      remove_oversized_file(file_path, folder) unless keep_originals
+      return :skipped
     end
 
-    # Validate file type using system file command
-    mime_type = `file --mime-type -b "#{file_path}"`.strip
-      return unless Dam::Asset.new.accepted_types.include?(mime_type)
+    # Detect the type from the file's contents (and name), without running a shell command:
+    # file names come from whoever can write to the watched folder.
+    mime_type = File.open(file_path, "rb") { |io| Marcel::MimeType.for(io, name: file_name) }
+    unless Dam::Asset.new.accepted_types.include?(mime_type)
+      Rails.logger.info "WATCHED_FOLDER_SCAN_JOB: Skipping #{file_name}: unsupported type #{mime_type}"
+      return :skipped
+    end
 
-      # Check for existing asset by original_path (for files that haven't been moved yet)
-      existing_asset = Dam::Asset.find_by(original_path: file_path)
+    # Already imported from this path. In keep-originals mode the file stays, so this is
+    # how repeated scans recognize it; otherwise finish the interrupted move.
+    existing_asset = Dam::Asset.unscoped.find_by(tenant: folder.tenant, original_path: file_path)
     if existing_asset
-      Rails.logger.info "🔄 WATCHED_FOLDER_SCAN_JOB: File #{File.basename(file_path)} already has an asset (ID: #{existing_asset.id}), ensuring original file is deleted"
-      # Delete the original file since we already have this asset
-      delete_original_file(file_path, existing_asset)
-      return
+      delete_original_file(file_path, existing_asset) unless keep_originals
+      return :skipped
     end
 
     # The user auto-imported files are attributed to.
@@ -170,17 +175,25 @@ module Dam
     # Apply auto-tags from the watched folder
     apply_auto_tags(asset, folder)
 
-    # After successful upload to S3, delete the original file from watcher folder
-    delete_original_file(file_path, asset)
+    # Move semantics: remove the original once it's safely stored.
+    delete_original_file(file_path, asset) unless keep_originals
 
     # Generate thumbnail in background if needed
     if asset.requires_thumbnail?
       Dam::AssetThumbnailJob.perform_later(asset.id)
     end
 
+    :imported
   rescue => e
     Rails.logger.error "Error importing file #{file_path}: #{e.message}"
     raise e
+  end
+
+  def remove_oversized_file(file_path, folder)
+    File.delete(file_path)
+    Rails.logger.info "WATCHED_FOLDER_SCAN_JOB: Deleted oversized file #{File.basename(file_path)} from the watched folder"
+  rescue SystemCallError => e
+    Rails.logger.warn "WATCHED_FOLDER_SCAN_JOB: Couldn't delete oversized file #{file_path}: #{e.message}"
   end
 
   def apply_auto_tags(asset, folder)

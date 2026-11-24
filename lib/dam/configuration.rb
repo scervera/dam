@@ -87,6 +87,11 @@ module Dam
     # files, e.g. config.watched_folder_roots = [ "/watched" ].
     attr_accessor :watched_folder_roots
 
+    # false (default): watched folders are drop folders — each file is moved into the DAM
+    # (deleted from the folder after import). true: originals are left in place (e.g. a
+    # read-only NAS archive); files already imported are recognized by their path.
+    attr_accessor :watched_folder_keep_originals
+
     # AI auto-tagging provider. nil (the default) builds one from ENV (DAM_AI_PROVIDER,
     # DAM_AI_MODEL, DAM_AI_API_KEY, DAM_AI_BASE_URL; see Dam::Ai::Providers.from_env).
     # Otherwise :openai, :openai_compatible or :anthropic (configured from ENV), or any
@@ -120,6 +125,7 @@ module Dam
       @ai_retryable_errors = []
       @queue_names = DEFAULT_QUEUE_NAMES.dup
       @watched_folder_scheduler = :self_enqueue
+      @watched_folder_keep_originals = false
       @ai_provider = nil
     end
 

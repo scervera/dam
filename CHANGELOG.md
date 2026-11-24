@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.2
+
+### Security
+- Watched-folder scans detected file types by running `file` through a shell with the file name interpolated, so a file named like `x"$(command)".png` ran that command as the app user. Types are now detected with Marcel, in process. **Anyone who can write files into a watched folder could run commands on the server; upgrade.**
+
+### Fixed
+- Watched-folder scans silently skipped every file on systems without the `file` command (for example slim Docker images).
+- Scans no longer include subfolders as files, and treat `[`, `{` etc. in the folder path literally.
+- Skipped files (unsupported type, too large, already imported) count as `files_skipped` instead of `files_processed`.
+- A failure to delete an oversized file no longer fails the whole scan.
+- "Scan completed" notifications are created only when a scan imported something or hit errors.
+
+### Added
+- `Dam.config.watched_folder_keep_originals` (default `false`). When true, imported files stay in the folder (e.g. a read-only NAS archive) and are recognized by path on later scans. Note: if an imported asset is deleted and purged, the file is imported again on the next scan.
+
 ## 0.3.1
 
 ### Fixed
