@@ -1,7 +1,5 @@
 module Dam
   class WatchedFolder < ApplicationRecord
-    self.table_name = "watched_folders"
-
     # Associations
     belongs_to :tenant, class_name: Dam.tenant_class_name
     has_many :folder_scans, class_name: "Dam::FolderScan", dependent: :destroy

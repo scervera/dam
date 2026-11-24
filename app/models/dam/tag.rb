@@ -1,7 +1,5 @@
 module Dam
   class Tag < ApplicationRecord
-    self.table_name = "tags"
-
     belongs_to :tenant, class_name: Dam.tenant_class_name
     has_many :asset_tags, class_name: "Dam::AssetTag", dependent: :destroy
     has_many :assets, through: :asset_tags, class_name: "Dam::Asset"
@@ -16,7 +14,7 @@ module Dam
     validates :tenant_id, presence: true
 
     # Scopes
-    scope :popular, -> { joins(:asset_tags).group("tags.id").order("COUNT(asset_tags.id) DESC") }
+    scope :popular, -> { joins(:asset_tags).group("dam_tags.id").order("COUNT(dam_asset_tags.id) DESC") }
     scope :recent, -> { order(created_at: :desc) }
     scope :alphabetical, -> { order(:name) }
 

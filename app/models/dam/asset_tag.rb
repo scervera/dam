@@ -1,7 +1,5 @@
 module Dam
   class AssetTag < ApplicationRecord
-    self.table_name = "asset_tags"
-
     belongs_to :asset, class_name: "Dam::Asset"
     belongs_to :tag, class_name: "Dam::Tag"
     belongs_to :tenant, class_name: Dam.tenant_class_name

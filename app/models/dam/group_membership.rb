@@ -1,7 +1,5 @@
 module Dam
   class GroupMembership < ApplicationRecord
-    self.table_name = "group_memberships"
-
     belongs_to :group, class_name: "Dam::Group"
     belongs_to :user, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name

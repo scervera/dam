@@ -1,7 +1,5 @@
 module Dam
   class WatchFolderNotification < ApplicationRecord
-    self.table_name = "watch_folder_notifications"
-
     # Disable single-table inheritance since we use 'type' for notification types
     self.inheritance_column = nil
 

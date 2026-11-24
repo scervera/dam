@@ -1,7 +1,5 @@
 module Dam
   class SmartFolder < ApplicationRecord
-    self.table_name = "smart_folders"
-
     belongs_to :user, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name
     belongs_to :group, required: false, class_name: "Dam::Group"
@@ -123,7 +121,7 @@ module Dam
 
       if viewing_user
         base_query = base_query.where(
-          "assets.visibility_level = ? OR assets.user_id = ?",
+          "dam_assets.visibility_level = ? OR dam_assets.user_id = ?",
           ::Dam::Asset.visibility_levels[:org_wide],
           viewing_user.id
         )

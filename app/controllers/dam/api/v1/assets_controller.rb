@@ -81,7 +81,7 @@ module Dam::Api
 
         lineage_id = @asset.lineage_identifier
         lineage_assets = policy_scope(Dam::Asset.where(tenant: Dam.current_tenant))
-                         .where("assets.lineage_id = :lineage_id OR assets.id::text = :lineage_id", lineage_id: lineage_id)
+                         .where("dam_assets.lineage_id = :lineage_id OR dam_assets.id::text = :lineage_id", lineage_id: lineage_id)
                          .includes(file_attachment: :blob, thumbnail_attachment: :blob)
                          .order(created_at: :asc)
                          .to_a
@@ -605,10 +605,10 @@ module Dam::Api
         policy_scope(Dam::Asset.where(tenant: Dam.current_tenant))
       end
 
-      # Explicit join for Active Storage: record_id is string, assets.id is bigint (see dashboard_controller)
+      # Explicit join for Active Storage: record_id is string, dam_assets.id is bigint (see dashboard_controller)
       def join_file_blob(scope)
         scope.joins(
-          "INNER JOIN active_storage_attachments ON active_storage_attachments.record_id::bigint = assets.id AND active_storage_attachments.record_type = 'Dam::Asset' AND active_storage_attachments.name = 'file'"
+          "INNER JOIN active_storage_attachments ON active_storage_attachments.record_id::bigint = dam_assets.id AND active_storage_attachments.record_type = 'Dam::Asset' AND active_storage_attachments.name = 'file'"
         ).joins(
           "INNER JOIN active_storage_blobs ON active_storage_blobs.id = active_storage_attachments.blob_id"
         )
@@ -641,9 +641,9 @@ module Dam::Api
 
           if words.length > 1
             # Multi-word: match if ANY word appears in name, tags, or face person name
-            name_conditions = words.map { |_word| "assets.name ILIKE ?" }.join(" OR ")
-            tag_conditions = words.map { |_word| "tags.name ILIKE ?" }.join(" OR ")
-            face_conditions = words.map { |_word| "face_people.name ILIKE ?" }.join(" OR ")
+            name_conditions = words.map { |_word| "dam_assets.name ILIKE ?" }.join(" OR ")
+            tag_conditions = words.map { |_word| "dam_tags.name ILIKE ?" }.join(" OR ")
+            face_conditions = words.map { |_word| "dam_face_people.name ILIKE ?" }.join(" OR ")
             name_values = words.map { |word| "%#{word}%" }
             tag_values = words.map { |word| "%#{word}%" }
             face_values = words.map { |word| "%#{word}%" }
@@ -664,7 +664,7 @@ module Dam::Api
               .left_joins(:tags)
               .left_joins(face_detections: :person)
               .where(
-                "assets.name ILIKE ? OR tags.name ILIKE ? OR face_people.name ILIKE ?",
+                "dam_assets.name ILIKE ? OR dam_tags.name ILIKE ? OR dam_face_people.name ILIKE ?",
                 search_pattern,
                 search_pattern,
                 search_pattern

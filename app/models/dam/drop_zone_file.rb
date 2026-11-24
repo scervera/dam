@@ -1,7 +1,5 @@
 module Dam
   class DropZoneFile < ApplicationRecord
-    self.table_name = "drop_zone_files"
-
     belongs_to :drop_zone, class_name: "Dam::DropZone"
     belongs_to :asset, class_name: "Dam::Asset"
     belongs_to :uploaded_by, class_name: Dam.user_class_name

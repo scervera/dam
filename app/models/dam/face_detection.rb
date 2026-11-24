@@ -2,8 +2,6 @@
 
 module Dam
   class FaceDetection < ApplicationRecord
-    self.table_name = "face_detections"
-
     belongs_to :asset, class_name: "Dam::Asset"
     belongs_to :tenant, class_name: Dam.tenant_class_name
     belongs_to :person, class_name: "Dam::FacePerson", optional: true, counter_cache: :face_count

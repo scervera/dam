@@ -35,7 +35,7 @@ bin/rails generate dam:install --tenant-table=tenants --user-table=users
 bin/rails db:migrate
 ```
 
-The generator adds a migration for the DAM's 16 tables and `config/initializers/dam.rb`. Then mount the API inside your API scope:
+The generator adds a migration for the DAM's 16 tables (all prefixed `dam_`, e.g. `dam_assets`, `dam_tags`) and `config/initializers/dam.rb`. Then mount the API inside your API scope:
 
 ```ruby
 # config/routes.rb

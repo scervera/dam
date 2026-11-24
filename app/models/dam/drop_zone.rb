@@ -1,7 +1,5 @@
 module Dam
   class DropZone < ApplicationRecord
-    self.table_name = "drop_zones"
-
     belongs_to :owner, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name
     has_many :drop_zone_files, class_name: "Dam::DropZoneFile", dependent: :destroy

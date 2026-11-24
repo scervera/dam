@@ -4,8 +4,6 @@ require "set"
 
 module Dam
   class Asset < ApplicationRecord
-    self.table_name = "assets"
-
     belongs_to :user, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name
     belongs_to :parent_asset, class_name: "Dam::Asset", optional: true
@@ -299,7 +297,7 @@ module Dam
       lid = lineage_identifier
       self.class
         .where(tenant_id: tenant_id)
-        .where("assets.lineage_id = :lineage_id OR assets.id::text = :lineage_id", lineage_id: lid)
+        .where("dam_assets.lineage_id = :lineage_id OR dam_assets.id::text = :lineage_id", lineage_id: lid)
     end
 
     def add_tag(tag_name)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 (2026-11-24)
+
+**Breaking:** all tables are now prefixed `dam_` (`dam_assets`, `dam_tags`, `dam_groups`, …) so they don't collide with host tables. Models use the engine's default `dam_` prefix instead of explicit `table_name`s. Existing installs need a migration that renames the 16 tables (`rename_table :assets, :dam_assets`, and so on; Rails renames default-named indexes with them, and foreign keys follow). Columns and polymorphic types (`Dam::Asset`) are unchanged.
+
 ## 0.1.0 (2026-11-23)
 
 First standalone release.

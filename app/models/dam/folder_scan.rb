@@ -1,7 +1,5 @@
 module Dam
   class FolderScan < ApplicationRecord
-    self.table_name = "folder_scans"
-
     # Associations
     belongs_to :watched_folder, class_name: "Dam::WatchedFolder"
     belongs_to :tenant, class_name: Dam.tenant_class_name

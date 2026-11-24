@@ -1,7 +1,5 @@
 module Dam
   class DropZoneSubscription < ApplicationRecord
-    self.table_name = "drop_zone_subscriptions"
-
     belongs_to :drop_zone, class_name: "Dam::DropZone"
     belongs_to :user, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name

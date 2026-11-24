@@ -10,8 +10,8 @@ RSpec.describe Dam::Generators::InstallGenerator do
 
       migration = File.read(Dir[File.join(dir, "db/migrate/*_create_dam_tables.rb")].first)
       expect(migration.scan(/create_table "/).size).to eq(16)
-      expect(migration).to include('add_foreign_key "assets", "organizations", column: "tenant_id"')
-      expect(migration).to include('add_foreign_key "drop_zone_files", "members", column: "uploaded_by_id"')
+      expect(migration).to include('add_foreign_key "dam_assets", "organizations", column: "tenant_id"')
+      expect(migration).to include('add_foreign_key "dam_drop_zone_files", "members", column: "uploaded_by_id"')
       expect(migration).not_to include("force: :cascade")
 
       initializer = File.read(File.join(dir, "config/initializers/dam.rb"))

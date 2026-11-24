@@ -42,21 +42,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.index [ "blob_id", "variation_digest" ], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "asset_tags", force: :cascade do |t|
+  create_table "dam_asset_tags", force: :cascade do |t|
     t.bigint "asset_id", null: false
     t.datetime "created_at", null: false
     t.bigint "tag_id", null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "asset_id", "tag_id" ], name: "index_asset_tags_on_asset_id_and_tag_id"
-    t.index [ "asset_id" ], name: "index_asset_tags_on_asset_id"
-    t.index [ "tag_id" ], name: "index_asset_tags_on_tag_id"
-    t.index [ "tenant_id", "asset_id" ], name: "index_asset_tags_on_tenant_id_and_asset_id"
-    t.index [ "tenant_id", "tag_id" ], name: "index_asset_tags_on_tenant_id_and_tag_id"
-    t.index [ "tenant_id" ], name: "index_asset_tags_on_tenant_id"
+    t.index [ "asset_id", "tag_id" ], name: "index_dam_asset_tags_on_asset_id_and_tag_id"
+    t.index [ "asset_id" ], name: "index_dam_asset_tags_on_asset_id"
+    t.index [ "tag_id" ], name: "index_dam_asset_tags_on_tag_id"
+    t.index [ "tenant_id", "asset_id" ], name: "index_dam_asset_tags_on_tenant_id_and_asset_id"
+    t.index [ "tenant_id", "tag_id" ], name: "index_dam_asset_tags_on_tenant_id_and_tag_id"
+    t.index [ "tenant_id" ], name: "index_dam_asset_tags_on_tenant_id"
   end
 
-  create_table "assets", force: :cascade do |t|
+  create_table "dam_assets", force: :cascade do |t|
     t.datetime "ai_auto_tagged_at"
     t.string "ai_tagging_error"
     t.boolean "auto_imported", default: false
@@ -81,33 +81,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.integer "video_width"
     t.integer "visibility_level", default: 0, null: false
     t.bigint "watched_folder_id"
-    t.index [ "auto_imported" ], name: "index_assets_on_auto_imported"
-    t.index [ "deleted_at" ], name: "index_assets_on_deleted_at"
-    t.index [ "import_scan_id" ], name: "index_assets_on_import_scan_id"
-    t.index [ "original_path" ], name: "index_assets_on_original_path"
-    t.index [ "parent_asset_id" ], name: "index_assets_on_parent_asset_id"
-    t.index [ "purge_after" ], name: "index_assets_on_purge_after"
-    t.index [ "tenant_id", "created_at" ], name: "index_assets_on_tenant_id_and_created_at"
-    t.index [ "tenant_id", "deleted_at", "created_at" ], name: "index_assets_on_tenant_id_and_deleted_at_and_created_at"
-    t.index [ "tenant_id", "lineage_id" ], name: "index_assets_on_tenant_id_and_lineage_id"
-    t.index [ "tenant_id" ], name: "index_assets_on_tenant_id"
-    t.index [ "user_id" ], name: "index_assets_on_user_id"
-    t.index [ "visibility_level" ], name: "index_assets_on_visibility_level"
-    t.index [ "watched_folder_id" ], name: "index_assets_on_watched_folder_id"
+    t.index [ "auto_imported" ], name: "index_dam_assets_on_auto_imported"
+    t.index [ "deleted_at" ], name: "index_dam_assets_on_deleted_at"
+    t.index [ "import_scan_id" ], name: "index_dam_assets_on_import_scan_id"
+    t.index [ "original_path" ], name: "index_dam_assets_on_original_path"
+    t.index [ "parent_asset_id" ], name: "index_dam_assets_on_parent_asset_id"
+    t.index [ "purge_after" ], name: "index_dam_assets_on_purge_after"
+    t.index [ "tenant_id", "created_at" ], name: "index_dam_assets_on_tenant_id_and_created_at"
+    t.index [ "tenant_id", "deleted_at", "created_at" ], name: "index_dam_assets_on_tenant_id_and_deleted_at_and_created_at"
+    t.index [ "tenant_id", "lineage_id" ], name: "index_dam_assets_on_tenant_id_and_lineage_id"
+    t.index [ "tenant_id" ], name: "index_dam_assets_on_tenant_id"
+    t.index [ "user_id" ], name: "index_dam_assets_on_user_id"
+    t.index [ "visibility_level" ], name: "index_dam_assets_on_visibility_level"
+    t.index [ "watched_folder_id" ], name: "index_dam_assets_on_watched_folder_id"
   end
 
-  create_table "collection_assets", force: :cascade do |t|
+  create_table "dam_collection_assets", force: :cascade do |t|
     t.bigint "asset_id", null: false
     t.bigint "collection_id", null: false
     t.datetime "created_at", null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "asset_id" ], name: "index_collection_assets_on_asset_id"
-    t.index [ "collection_id" ], name: "index_collection_assets_on_collection_id"
-    t.index [ "tenant_id" ], name: "index_collection_assets_on_tenant_id"
+    t.index [ "asset_id" ], name: "index_dam_collection_assets_on_asset_id"
+    t.index [ "collection_id" ], name: "index_dam_collection_assets_on_collection_id"
+    t.index [ "tenant_id" ], name: "index_dam_collection_assets_on_tenant_id"
   end
 
-  create_table "collections", force: :cascade do |t|
+  create_table "dam_collections", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.boolean "is_public"
@@ -115,11 +115,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index [ "tenant_id" ], name: "index_collections_on_tenant_id"
-    t.index [ "user_id" ], name: "index_collections_on_user_id"
+    t.index [ "tenant_id" ], name: "index_dam_collections_on_tenant_id"
+    t.index [ "user_id" ], name: "index_dam_collections_on_user_id"
   end
 
-  create_table "drop_zone_files", force: :cascade do |t|
+  create_table "dam_drop_zone_files", force: :cascade do |t|
     t.bigint "asset_id", null: false
     t.datetime "created_at", null: false
     t.bigint "drop_zone_id", null: false
@@ -128,14 +128,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.datetime "updated_at", null: false
     t.datetime "uploaded_at", null: false
     t.bigint "uploaded_by_id", null: false
-    t.index [ "asset_id" ], name: "index_drop_zone_files_on_asset_id"
-    t.index [ "drop_zone_id" ], name: "index_drop_zone_files_on_drop_zone_id"
-    t.index [ "tenant_id" ], name: "index_drop_zone_files_on_tenant_id"
-    t.index [ "uploaded_at" ], name: "index_drop_zone_files_on_uploaded_at"
-    t.index [ "uploaded_by_id" ], name: "index_drop_zone_files_on_uploaded_by_id"
+    t.index [ "asset_id" ], name: "index_dam_drop_zone_files_on_asset_id"
+    t.index [ "drop_zone_id" ], name: "index_dam_drop_zone_files_on_drop_zone_id"
+    t.index [ "tenant_id" ], name: "index_dam_drop_zone_files_on_tenant_id"
+    t.index [ "uploaded_at" ], name: "index_dam_drop_zone_files_on_uploaded_at"
+    t.index [ "uploaded_by_id" ], name: "index_dam_drop_zone_files_on_uploaded_by_id"
   end
 
-  create_table "drop_zone_subscriptions", force: :cascade do |t|
+  create_table "dam_drop_zone_subscriptions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "drop_zone_id", null: false
     t.text "notification_preferences"
@@ -143,13 +143,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index [ "drop_zone_id", "user_id" ], name: "index_drop_zone_subscriptions_on_drop_zone_id_and_user_id", unique: true
-    t.index [ "drop_zone_id" ], name: "index_drop_zone_subscriptions_on_drop_zone_id"
-    t.index [ "tenant_id" ], name: "index_drop_zone_subscriptions_on_tenant_id"
-    t.index [ "user_id" ], name: "index_drop_zone_subscriptions_on_user_id"
+    t.index [ "drop_zone_id", "user_id" ], name: "index_dam_drop_zone_subscriptions_on_drop_zone_id_and_user_id", unique: true
+    t.index [ "drop_zone_id" ], name: "index_dam_drop_zone_subscriptions_on_drop_zone_id"
+    t.index [ "tenant_id" ], name: "index_dam_drop_zone_subscriptions_on_tenant_id"
+    t.index [ "user_id" ], name: "index_dam_drop_zone_subscriptions_on_user_id"
   end
 
-  create_table "drop_zones", force: :cascade do |t|
+  create_table "dam_drop_zones", force: :cascade do |t|
     t.text "accepted_file_types"
     t.datetime "created_at", null: false
     t.text "description"
@@ -160,12 +160,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.text "settings"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "is_active" ], name: "index_drop_zones_on_is_active"
-    t.index [ "owner_id" ], name: "index_drop_zones_on_owner_id"
-    t.index [ "tenant_id" ], name: "index_drop_zones_on_tenant_id"
+    t.index [ "is_active" ], name: "index_dam_drop_zones_on_is_active"
+    t.index [ "owner_id" ], name: "index_dam_drop_zones_on_owner_id"
+    t.index [ "tenant_id" ], name: "index_dam_drop_zones_on_tenant_id"
   end
 
-  create_table "face_detections", force: :cascade do |t|
+  create_table "dam_face_detections", force: :cascade do |t|
     t.bigint "asset_id", null: false
     t.jsonb "bounding_box", default: {}, null: false
     t.float "confidence"
@@ -176,26 +176,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.bigint "person_id"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "asset_id" ], name: "index_face_detections_on_asset_id"
-    t.index [ "face_engine_id" ], name: "index_face_detections_on_face_engine_id"
-    t.index [ "person_id" ], name: "index_face_detections_on_person_id"
-    t.index [ "tenant_id" ], name: "index_face_detections_on_tenant_id"
+    t.index [ "asset_id" ], name: "index_dam_face_detections_on_asset_id"
+    t.index [ "face_engine_id" ], name: "index_dam_face_detections_on_face_engine_id"
+    t.index [ "person_id" ], name: "index_dam_face_detections_on_person_id"
+    t.index [ "tenant_id" ], name: "index_dam_face_detections_on_tenant_id"
   end
 
-  create_table "face_people", force: :cascade do |t|
+  create_table "dam_face_people", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "face_count", default: 0, null: false
     t.string "name", null: false
     t.bigint "tenant_id", null: false
     t.bigint "thumbnail_asset_id"
     t.datetime "updated_at", null: false
-    t.index [ "name" ], name: "index_face_people_on_name"
-    t.index [ "tenant_id", "name" ], name: "index_face_people_on_tenant_id_and_name", unique: true
-    t.index [ "tenant_id" ], name: "index_face_people_on_tenant_id"
-    t.index [ "thumbnail_asset_id" ], name: "index_face_people_on_thumbnail_asset_id"
+    t.index [ "name" ], name: "index_dam_face_people_on_name"
+    t.index [ "tenant_id", "name" ], name: "index_dam_face_people_on_tenant_id_and_name", unique: true
+    t.index [ "tenant_id" ], name: "index_dam_face_people_on_tenant_id"
+    t.index [ "thumbnail_asset_id" ], name: "index_dam_face_people_on_thumbnail_asset_id"
   end
 
-  create_table "folder_scans", force: :cascade do |t|
+  create_table "dam_folder_scans", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.text "error_details"
@@ -208,26 +208,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "watched_folder_id", null: false
-    t.index [ "started_at" ], name: "index_folder_scans_on_started_at"
-    t.index [ "status" ], name: "index_folder_scans_on_status"
-    t.index [ "tenant_id" ], name: "index_folder_scans_on_tenant_id"
-    t.index [ "watched_folder_id" ], name: "index_folder_scans_on_watched_folder_id"
+    t.index [ "started_at" ], name: "index_dam_folder_scans_on_started_at"
+    t.index [ "status" ], name: "index_dam_folder_scans_on_status"
+    t.index [ "tenant_id" ], name: "index_dam_folder_scans_on_tenant_id"
+    t.index [ "watched_folder_id" ], name: "index_dam_folder_scans_on_watched_folder_id"
   end
 
-  create_table "group_memberships", force: :cascade do |t|
+  create_table "dam_group_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "group_id", null: false
     t.string "role", default: "member"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index [ "group_id", "user_id" ], name: "index_group_memberships_on_group_id_and_user_id", unique: true
-    t.index [ "group_id" ], name: "index_group_memberships_on_group_id"
-    t.index [ "tenant_id" ], name: "index_group_memberships_on_tenant_id"
-    t.index [ "user_id" ], name: "index_group_memberships_on_user_id"
+    t.index [ "group_id", "user_id" ], name: "index_dam_group_memberships_on_group_id_and_user_id", unique: true
+    t.index [ "group_id" ], name: "index_dam_group_memberships_on_group_id"
+    t.index [ "tenant_id" ], name: "index_dam_group_memberships_on_tenant_id"
+    t.index [ "user_id" ], name: "index_dam_group_memberships_on_user_id"
   end
 
-  create_table "groups", force: :cascade do |t|
+  create_table "dam_groups", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.text "description"
@@ -235,13 +235,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.bigint "owner_id", null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "name" ], name: "index_groups_on_name"
-    t.index [ "owner_id", "active" ], name: "index_groups_on_owner_id_and_active"
-    t.index [ "owner_id" ], name: "index_groups_on_owner_id"
-    t.index [ "tenant_id" ], name: "index_groups_on_tenant_id"
+    t.index [ "name" ], name: "index_dam_groups_on_name"
+    t.index [ "owner_id", "active" ], name: "index_dam_groups_on_owner_id_and_active"
+    t.index [ "owner_id" ], name: "index_dam_groups_on_owner_id"
+    t.index [ "tenant_id" ], name: "index_dam_groups_on_tenant_id"
   end
 
-  create_table "smart_folders", force: :cascade do |t|
+  create_table "dam_smart_folders", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "color", default: "#A88BEA"
     t.datetime "created_at", null: false
@@ -257,23 +257,62 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "visibility_level", default: "personal", null: false
-    t.index [ "group_id" ], name: "index_smart_folders_on_group_id"
-    t.index [ "name", "tenant_id" ], name: "index_smart_folders_on_name_and_tenant_id", unique: true
-    t.index [ "tenant_id" ], name: "index_smart_folders_on_tenant_id"
-    t.index [ "user_id", "active" ], name: "index_smart_folders_on_user_id_and_active"
-    t.index [ "user_id", "pinned_to_sidebar" ], name: "index_smart_folders_on_user_id_and_pinned_to_sidebar"
-    t.index [ "user_id", "sort_order" ], name: "index_smart_folders_on_user_id_and_sort_order"
-    t.index [ "user_id" ], name: "index_smart_folders_on_user_id"
-    t.index [ "visibility_level" ], name: "index_smart_folders_on_visibility_level"
+    t.index [ "group_id" ], name: "index_dam_smart_folders_on_group_id"
+    t.index [ "name", "tenant_id" ], name: "index_dam_smart_folders_on_name_and_tenant_id", unique: true
+    t.index [ "tenant_id" ], name: "index_dam_smart_folders_on_tenant_id"
+    t.index [ "user_id", "active" ], name: "index_dam_smart_folders_on_user_id_and_active"
+    t.index [ "user_id", "pinned_to_sidebar" ], name: "index_dam_smart_folders_on_user_id_and_pinned_to_sidebar"
+    t.index [ "user_id", "sort_order" ], name: "index_dam_smart_folders_on_user_id_and_sort_order"
+    t.index [ "user_id" ], name: "index_dam_smart_folders_on_user_id"
+    t.index [ "visibility_level" ], name: "index_dam_smart_folders_on_visibility_level"
   end
 
-  create_table "tags", force: :cascade do |t|
+  create_table "dam_tags", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "tenant_id", "name" ], name: "index_tags_on_tenant_id_and_name", unique: true
-    t.index [ "tenant_id" ], name: "index_tags_on_tenant_id"
+    t.index [ "tenant_id", "name" ], name: "index_dam_tags_on_tenant_id_and_name", unique: true
+    t.index [ "tenant_id" ], name: "index_dam_tags_on_tenant_id"
+  end
+
+  create_table "dam_watch_folder_notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "file_path"
+    t.text "message", null: false
+    t.json "metadata"
+    t.string "status", default: "unread"
+    t.bigint "tenant_id", null: false
+    t.string "title", null: false
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "watched_folder_id", null: false
+    t.index [ "created_at" ], name: "index_dam_watch_folder_notifications_on_created_at"
+    t.index [ "tenant_id" ], name: "index_dam_watch_folder_notifications_on_tenant_id"
+    t.index [ "watched_folder_id", "status" ], name: "idx_on_watched_folder_id_status_a9e0129e96"
+    t.index [ "watched_folder_id" ], name: "index_dam_watch_folder_notifications_on_watched_folder_id"
+  end
+
+  create_table "dam_watched_folders", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.text "auto_tags"
+    t.datetime "created_at", null: false
+    t.datetime "last_scanned_at"
+    t.bigint "max_file_size_bytes", default: 10737418240
+    t.string "name", null: false
+    t.datetime "next_scan_at"
+    t.string "path", null: false
+    t.string "scan_frequency_unit", null: false
+    t.integer "scan_frequency_value", null: false
+    t.bigint "tenant_id", null: false
+    t.integer "total_errors", default: 0
+    t.integer "total_files_found", default: 0
+    t.integer "total_files_processed", default: 0
+    t.datetime "updated_at", null: false
+    t.index [ "active" ], name: "index_dam_watched_folders_on_active"
+    t.index [ "next_scan_at" ], name: "index_dam_watched_folders_on_next_scan_at"
+    t.index [ "tenant_id", "path" ], name: "index_dam_watched_folders_on_tenant_id_and_path", unique: true
+    t.index [ "tenant_id" ], name: "index_dam_watched_folders_on_tenant_id"
   end
 
   create_table "tenants", force: :cascade do |t|
@@ -294,87 +333,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_194207) do
     t.index [ "tenant_id" ], name: "index_users_on_tenant_id"
   end
 
-  create_table "watch_folder_notifications", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "file_path"
-    t.text "message", null: false
-    t.json "metadata"
-    t.string "status", default: "unread"
-    t.bigint "tenant_id", null: false
-    t.string "title", null: false
-    t.string "type", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "watched_folder_id", null: false
-    t.index [ "created_at" ], name: "index_watch_folder_notifications_on_created_at"
-    t.index [ "tenant_id" ], name: "index_watch_folder_notifications_on_tenant_id"
-    t.index [ "watched_folder_id", "status" ], name: "idx_on_watched_folder_id_status_a9e0129e96"
-    t.index [ "watched_folder_id" ], name: "index_watch_folder_notifications_on_watched_folder_id"
-  end
-
-  create_table "watched_folders", force: :cascade do |t|
-    t.boolean "active", default: true
-    t.text "auto_tags"
-    t.datetime "created_at", null: false
-    t.datetime "last_scanned_at"
-    t.bigint "max_file_size_bytes", default: 10737418240
-    t.string "name", null: false
-    t.datetime "next_scan_at"
-    t.string "path", null: false
-    t.string "scan_frequency_unit", null: false
-    t.integer "scan_frequency_value", null: false
-    t.bigint "tenant_id", null: false
-    t.integer "total_errors", default: 0
-    t.integer "total_files_found", default: 0
-    t.integer "total_files_processed", default: 0
-    t.datetime "updated_at", null: false
-    t.index [ "active" ], name: "index_watched_folders_on_active"
-    t.index [ "next_scan_at" ], name: "index_watched_folders_on_next_scan_at"
-    t.index [ "tenant_id", "path" ], name: "index_watched_folders_on_tenant_id_and_path", unique: true
-    t.index [ "tenant_id" ], name: "index_watched_folders_on_tenant_id"
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "asset_tags", "assets"
-  add_foreign_key "asset_tags", "tags"
-  add_foreign_key "asset_tags", "tenants"
-  add_foreign_key "assets", "assets", column: "parent_asset_id", on_delete: :nullify
-  add_foreign_key "assets", "folder_scans", column: "import_scan_id"
-  add_foreign_key "assets", "tenants"
-  add_foreign_key "assets", "users"
-  add_foreign_key "assets", "watched_folders"
-  add_foreign_key "collection_assets", "assets"
-  add_foreign_key "collection_assets", "collections"
-  add_foreign_key "collection_assets", "tenants"
-  add_foreign_key "collections", "tenants"
-  add_foreign_key "collections", "users"
-  add_foreign_key "drop_zone_files", "assets"
-  add_foreign_key "drop_zone_files", "drop_zones"
-  add_foreign_key "drop_zone_files", "tenants"
-  add_foreign_key "drop_zone_files", "users", column: "uploaded_by_id"
-  add_foreign_key "drop_zone_subscriptions", "drop_zones"
-  add_foreign_key "drop_zone_subscriptions", "tenants"
-  add_foreign_key "drop_zone_subscriptions", "users"
-  add_foreign_key "drop_zones", "tenants"
-  add_foreign_key "drop_zones", "users", column: "owner_id"
-  add_foreign_key "face_detections", "assets"
-  add_foreign_key "face_detections", "face_people", column: "person_id"
-  add_foreign_key "face_detections", "tenants"
-  add_foreign_key "face_people", "assets", column: "thumbnail_asset_id"
-  add_foreign_key "face_people", "tenants"
-  add_foreign_key "folder_scans", "tenants"
-  add_foreign_key "folder_scans", "watched_folders"
-  add_foreign_key "group_memberships", "groups"
-  add_foreign_key "group_memberships", "tenants"
-  add_foreign_key "group_memberships", "users"
-  add_foreign_key "groups", "tenants"
-  add_foreign_key "groups", "users", column: "owner_id"
-  add_foreign_key "smart_folders", "groups", on_delete: :nullify
-  add_foreign_key "smart_folders", "tenants"
-  add_foreign_key "smart_folders", "users"
-  add_foreign_key "tags", "tenants"
+  add_foreign_key "dam_asset_tags", "dam_assets", column: "asset_id"
+  add_foreign_key "dam_asset_tags", "dam_tags", column: "tag_id"
+  add_foreign_key "dam_asset_tags", "tenants"
+  add_foreign_key "dam_assets", "dam_assets", column: "parent_asset_id", on_delete: :nullify
+  add_foreign_key "dam_assets", "dam_folder_scans", column: "import_scan_id"
+  add_foreign_key "dam_assets", "dam_watched_folders", column: "watched_folder_id"
+  add_foreign_key "dam_assets", "tenants"
+  add_foreign_key "dam_assets", "users"
+  add_foreign_key "dam_collection_assets", "dam_assets", column: "asset_id"
+  add_foreign_key "dam_collection_assets", "dam_collections", column: "collection_id"
+  add_foreign_key "dam_collection_assets", "tenants"
+  add_foreign_key "dam_collections", "tenants"
+  add_foreign_key "dam_collections", "users"
+  add_foreign_key "dam_drop_zone_files", "dam_assets", column: "asset_id"
+  add_foreign_key "dam_drop_zone_files", "dam_drop_zones", column: "drop_zone_id"
+  add_foreign_key "dam_drop_zone_files", "tenants"
+  add_foreign_key "dam_drop_zone_files", "users", column: "uploaded_by_id"
+  add_foreign_key "dam_drop_zone_subscriptions", "dam_drop_zones", column: "drop_zone_id"
+  add_foreign_key "dam_drop_zone_subscriptions", "tenants"
+  add_foreign_key "dam_drop_zone_subscriptions", "users"
+  add_foreign_key "dam_drop_zones", "tenants"
+  add_foreign_key "dam_drop_zones", "users", column: "owner_id"
+  add_foreign_key "dam_face_detections", "dam_assets", column: "asset_id"
+  add_foreign_key "dam_face_detections", "dam_face_people", column: "person_id"
+  add_foreign_key "dam_face_detections", "tenants"
+  add_foreign_key "dam_face_people", "dam_assets", column: "thumbnail_asset_id"
+  add_foreign_key "dam_face_people", "tenants"
+  add_foreign_key "dam_folder_scans", "dam_watched_folders", column: "watched_folder_id"
+  add_foreign_key "dam_folder_scans", "tenants"
+  add_foreign_key "dam_group_memberships", "dam_groups", column: "group_id"
+  add_foreign_key "dam_group_memberships", "tenants"
+  add_foreign_key "dam_group_memberships", "users"
+  add_foreign_key "dam_groups", "tenants"
+  add_foreign_key "dam_groups", "users", column: "owner_id"
+  add_foreign_key "dam_smart_folders", "dam_groups", column: "group_id", on_delete: :nullify
+  add_foreign_key "dam_smart_folders", "tenants"
+  add_foreign_key "dam_smart_folders", "users"
+  add_foreign_key "dam_tags", "tenants"
+  add_foreign_key "dam_watch_folder_notifications", "dam_watched_folders", column: "watched_folder_id"
+  add_foreign_key "dam_watch_folder_notifications", "tenants"
+  add_foreign_key "dam_watched_folders", "tenants"
   add_foreign_key "users", "tenants"
-  add_foreign_key "watch_folder_notifications", "tenants"
-  add_foreign_key "watch_folder_notifications", "watched_folders"
-  add_foreign_key "watched_folders", "tenants"
 end

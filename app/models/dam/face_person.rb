@@ -2,8 +2,6 @@
 
 module Dam
   class FacePerson < ApplicationRecord
-    self.table_name = "face_people"
-
     belongs_to :tenant, class_name: Dam.tenant_class_name
     belongs_to :thumbnail_asset, class_name: "Dam::Asset", optional: true
     has_many :face_detections, class_name: "Dam::FaceDetection", dependent: :nullify

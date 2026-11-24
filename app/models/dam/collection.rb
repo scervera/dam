@@ -1,7 +1,5 @@
 module Dam
   class Collection < ApplicationRecord
-    self.table_name = "collections"
-
     belongs_to :user, class_name: Dam.user_class_name
     belongs_to :tenant, class_name: Dam.tenant_class_name
     has_many :collection_assets, class_name: "Dam::CollectionAsset", dependent: :destroy
