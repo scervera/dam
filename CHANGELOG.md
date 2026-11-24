@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+- Drop zones: `GET /drop_zones/:id` and `/drop_zones/:id/files` no longer call a `download_url` route the host had to define; file URLs come from `Dam::AssetUrls` (stream and thumbnail).
+- Watched folders: `create` sets the current tenant (it always failed with "Tenant must exist").
+- Watched folders: `scan_history` returns the list of scans (the block was attached to `render`).
+- Tags: deleting a tag as a non-admin writer queried the old `tags` table.
+- Asset lists: the first change in a tenant after a cache reset didn't invalidate the cached list (a missing version and the first bump both read as 1), so new uploads stayed hidden until `DAM_ASSET_LIST_CACHE_TTL_SECONDS` passed.
+
+### Security
+- Watched folders are managed by tenant owners and admins only; before, any signed-in user could create, scan or delete one for any server path.
+- New `Dam.config.watched_folder_roots`: when set, watched-folder paths must resolve (including `..` and symlinks) inside one of these directories.
+
 ## 0.3.0 (unreleased)
 
 **AI auto-tagging is provider-neutral.** It supports OpenAI, Anthropic Claude, and OpenAI-compatible servers (Ollama, vLLM, LM Studio, OpenRouter), chosen with `DAM_AI_PROVIDER`, `DAM_AI_MODEL`, `DAM_AI_API_KEY` and `DAM_AI_BASE_URL`, or `config.ai_provider` for a custom adapter. Existing installs that only set `OPENAI_API_KEY` keep using OpenAI.

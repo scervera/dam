@@ -82,6 +82,11 @@ module Dam
     #                  recurring task or cron
     attr_accessor :watched_folder_scheduler
 
+    # Directories watched folders may point into (strings). nil (the default) allows any
+    # path the app can read; set it when users must not be able to import arbitrary server
+    # files, e.g. config.watched_folder_roots = [ "/watched" ].
+    attr_accessor :watched_folder_roots
+
     # AI auto-tagging provider. nil (the default) builds one from ENV (DAM_AI_PROVIDER,
     # DAM_AI_MODEL, DAM_AI_API_KEY, DAM_AI_BASE_URL; see Dam::Ai::Providers.from_env).
     # Otherwise :openai, :openai_compatible or :anthropic (configured from ENV), or any

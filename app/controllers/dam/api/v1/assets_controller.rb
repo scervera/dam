@@ -796,8 +796,10 @@ module Dam::Api
         "dam:assets:list:v1:tenant:#{Dam.current_tenant.id}:ver"
       end
 
+      # Missing means no change yet. Models bump with increment(initial: 1), so the first
+      # change must move the version off this value.
       def asset_list_cache_version
-        Rails.cache.read(asset_list_cache_version_key) || 1
+        Rails.cache.read(asset_list_cache_version_key) || 0
       end
 
       def asset_list_cache_params_hash(pagination)
