@@ -116,7 +116,7 @@ module Dam::Api
           # Check if user created assets with this tag
           user_assets_with_tag = Dam::Asset.where(tenant: Dam.current_tenant, user: current_user)
             .joins(:tags)
-            .where(tags: { id: @tag.id })
+            .where(Dam::Tag.table_name => { id: @tag.id })
             .exists?
           can_delete = user_assets_with_tag
         end

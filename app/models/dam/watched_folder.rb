@@ -10,6 +10,7 @@ module Dam
     validates :name, presence: true, length: { maximum: 255 }
     validates :path, presence: true, uniqueness: { scope: :tenant_id }
     validates :tenant_id, presence: true
+    validate :path_within_allowed_roots
     validates :scan_frequency_value, presence: true,
               numericality: { greater_than: 0, less_than_or_equal_to: 999 }
     validates :scan_frequency_unit, inclusion: { in: %w[minutes hours days] }
@@ -102,6 +103,24 @@ module Dam
       if saved_change_to_scan_frequency_value? || saved_change_to_scan_frequency_unit?
         schedule_next_scan
       end
+    end
+
+    # With Dam.config.watched_folder_roots set, the path (after resolving ".." and symlinks)
+    # must be one of the roots or inside one.
+    def path_within_allowed_roots
+      roots = Array(Dam.config.watched_folder_roots).map { |root| resolved_path(root.to_s) }
+      return if roots.empty? || path.blank?
+
+      expanded = resolved_path(path)
+      return if roots.any? { |root| expanded == root || expanded.start_with?("#{root.chomp('/')}/") }
+
+      errors.add(:path, "must be inside #{roots.join(' or ')}")
+    end
+
+    def resolved_path(value)
+      File.realpath(value)
+    rescue SystemCallError
+      File.expand_path(value)
     end
   end
 end

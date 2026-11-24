@@ -1,4 +1,6 @@
 class Dam::Api::V1::WatchedFoldersController < Dam::Api::V1::BaseController
+  # Watched folders read paths on the server, so only tenant owners and admins manage them.
+  before_action :require_watched_folder_manager!
   before_action :set_watched_folder, only: [ :show, :update, :destroy, :scan_now, :scan_history, :notifications ]
 
   # GET /api/watched_folders
@@ -30,7 +32,7 @@ class Dam::Api::V1::WatchedFoldersController < Dam::Api::V1::BaseController
 
   # POST /api/watched_folders
   def create
-    @watched_folder = Dam::WatchedFolder.new(watched_folder_params)
+    @watched_folder = Dam::WatchedFolder.new(watched_folder_params.merge(tenant: Dam.current_tenant))
 
     if @watched_folder.save
       response_data = @watched_folder.as_json(only: [ :id, :name, :path, :scan_frequency_value, :scan_frequency_unit, :active, :max_file_size_bytes, :auto_tags, :last_scanned_at, :next_scan_at, :total_files_found, :total_files_processed, :total_errors, :created_at, :updated_at ]).merge(
@@ -91,13 +93,14 @@ class Dam::Api::V1::WatchedFoldersController < Dam::Api::V1::BaseController
   # GET /api/watched_folders/:id/scan_history
   def scan_history
     @scans = @watched_folder.folder_scans.order(started_at: :desc).limit(50)
-    render json: @scans.map do |scan|
+    scans = @scans.map do |scan|
       scan.as_json(only: [ :id, :watched_folder_id, :started_at, :completed_at, :files_found, :files_processed, :files_skipped, :errors_count, :error_details, :status, :created_at, :updated_at ]).merge(
         duration: scan.duration,
         success_rate: scan.success_rate,
         error_rate: scan.error_rate
       )
     end
+    render json: scans
   end
 
   # GET /api/watched_folders/:id/notifications
@@ -114,6 +117,12 @@ class Dam::Api::V1::WatchedFoldersController < Dam::Api::V1::BaseController
   end
 
   private
+
+  def require_watched_folder_manager!
+    return if current_user.admin? || current_user.tenant_owner?
+
+    render_error("Forbidden", :forbidden)
+  end
 
   def set_watched_folder
     @watched_folder = tenant_scope(Dam::WatchedFolder).find(params[:id])

@@ -309,26 +309,19 @@ class Dam::Api::V1::DropZonesController < Dam::Api::V1::BaseController
   end
 
          def drop_zone_file_serializer(drop_zone_file)
-           host = ENV["ACTIVE_STORAGE_HOST"] || "http://localhost:8081"
+           asset = drop_zone_file.asset
            {
              id: drop_zone_file.id,
              asset: {
-               id: drop_zone_file.asset.id,
-               name: drop_zone_file.asset.name,
-               filename: drop_zone_file.asset.filename,
-               file_size: drop_zone_file.asset.file_size,
-               file_size_formatted: drop_zone_file.asset.file_size_formatted,
-               content_type: drop_zone_file.asset.content_type,
-               file_type: drop_zone_file.asset.file_type,
-               download_url: Rails.application.routes.url_helpers.download_url(drop_zone_file.asset.id, host: host),
-               thumbnail_url: if drop_zone_file.asset.thumbnail.attached?
-                               Rails.application.routes.url_helpers.rails_blob_url(drop_zone_file.asset.thumbnail, host: host)
-                              elsif drop_zone_file.asset.image?
-                               # For images, use the main file as thumbnail if no thumbnail is attached
-                               Rails.application.routes.url_helpers.rails_blob_url(drop_zone_file.asset.file, host: host)
-                              else
-                               nil
-                              end
+               id: asset.id,
+               name: asset.name,
+               filename: asset.filename,
+               file_size: asset.file_size,
+               file_size_formatted: asset.file_size_formatted,
+               content_type: asset.content_type,
+               file_type: asset.file_type,
+               download_url: Dam::AssetUrls.download_url(asset),
+               thumbnail_url: Dam::AssetUrls.thumbnail_url(asset)
              },
              uploaded_by: {
                id: drop_zone_file.uploaded_by.id,
