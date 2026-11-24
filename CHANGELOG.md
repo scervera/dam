@@ -7,6 +7,7 @@
 - Watched folders: `create` sets the current tenant (it always failed with "Tenant must exist").
 - Watched folders: `scan_history` returns the list of scans (the block was attached to `render`).
 - Tags: deleting a tag as a non-admin writer queried the old `tags` table.
+- Asset lists: the first change in a tenant after a cache reset didn't invalidate the cached list (a missing version and the first bump both read as 1), so new uploads stayed hidden until `DAM_ASSET_LIST_CACHE_TTL_SECONDS` passed.
 
 ### Security
 - Watched folders are managed by tenant owners and admins only; before, any signed-in user could create, scan or delete one for any server path.

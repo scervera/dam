@@ -75,3 +75,26 @@ RSpec.describe "0.3.1 fixes" do
     expect(Dam::Tag.exists?(tag.id)).to be(false)
   end
 end
+
+RSpec.describe "asset list cache" do
+  let(:tenant) { create_tenant }
+  let(:writer) { create_user(tenant, role: "writer") }
+
+  around do |example|
+    original = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    example.run
+  ensure
+    Rails.cache = original
+  end
+
+  it "shows a new upload right after the list was cached" do
+    get "/api/v1/assets", headers: auth(writer)
+    expect(response.parsed_body["data"]).to be_empty
+
+    create_asset(writer)
+
+    get "/api/v1/assets", headers: auth(writer)
+    expect(response.parsed_body["data"].size).to eq(1)
+  end
+end
