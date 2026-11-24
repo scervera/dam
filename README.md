@@ -25,7 +25,7 @@ The gem is distributed from GitHub, not RubyGems (a different gem named `dam` ma
 
 ```ruby
 # Gemfile
-gem "dam", git: "https://github.com/scervera/dam.git", tag: "v0.3.1"
+gem "dam", git: "https://github.com/scervera/dam.git", tag: "v0.3.2"
 ```
 
 ```bash
@@ -115,6 +115,7 @@ Other settings:
 | `ai_request_wrapper`, `ai_retryable_errors` | Pass-through, none | Wraps every AI request, e.g. for rate limiting; errors listed are retried |
 | `queue_names` | `:default` for all | Active Job queue per job kind: `default`, `ai`, `purge`, `scheduler`. Set only the ones you change |
 | `watched_folder_roots` | `nil` (any path) | Directories watched folders may point into, e.g. `[ "/watched" ]` |
+| `watched_folder_keep_originals` | `false` | `true` leaves imported files in the watched folder (read-only archives); `false` moves them into the DAM |
 | `watched_folder_scheduler` | `:self_enqueue` | How `Dam::WatchedFolderSchedulerJob` repeats; see below |
 | `face_collection_prefix` | `AWS_REKOGNITION_COLLECTION_ID` or `"dam-faces"` | Prefix of the per-tenant Rekognition collections |
 
