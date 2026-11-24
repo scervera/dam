@@ -1,6 +1,11 @@
 module Dam
+  # Starts scans of watched folders that are due. Dam.config.watched_folder_scheduler picks
+  # how it repeats: :self_enqueue (each run enqueues the next, 30 seconds later) or
+  # :external (one pass per run; the host schedules it).
   class WatchedFolderSchedulerJob < ApplicationJob
-    queue_as :default
+    INTERVAL = 30.seconds
+
+    queue_as { Dam.config.queue_name(:scheduler) }
 
     def perform
       Rails.logger.info "WatchedFolderSchedulerJob: Checking for folders due for scanning"
@@ -15,26 +20,33 @@ module Dam
         Rails.logger.info "WatchedFolderSchedulerJob: Scheduled next scan for #{folder.name} at #{folder.next_scan_at}"
       end
 
-      # Schedule the next check in 30 seconds (single-flight: avoid piling duplicate schedulers in Sidekiq).
-      unless self.class.scheduler_pending?
-        Dam::WatchedFolderSchedulerJob.set(wait: 30.seconds).perform_later
-      end
+      enqueue_next_run if Dam.config.watched_folder_scheduler.to_sym == :self_enqueue
 
-      Rails.logger.info "WatchedFolderSchedulerJob: Completed processing due folders, scheduled next check"
+      Rails.logger.info "WatchedFolderSchedulerJob: Completed processing due folders"
     end
 
-    # True when a Dam::WatchedFolderSchedulerJob is already queued or scheduled.
+    # True when a Dam::WatchedFolderSchedulerJob is already queued or scheduled. Only
+    # detectable with Sidekiq; other adapters always return false.
     def self.scheduler_pending?
       return false unless defined?(Sidekiq::ScheduledSet)
 
       wrapper = "ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper"
       Sidekiq::ScheduledSet.new.any? do |job|
         job.klass == wrapper && job.args.first.to_s.include?("WatchedFolderSchedulerJob")
-      end || Sidekiq::Queue.new("default").any? do |job|
+      end || Sidekiq::Queue.new(Dam.config.queue_name(:scheduler).to_s).any? do |job|
         job.klass == wrapper && job.args.first.to_s.include?("WatchedFolderSchedulerJob")
       end
     rescue StandardError
       false
+    end
+
+    private
+
+    # Single-flight: don't pile up duplicate schedulers.
+    def enqueue_next_run
+      return if self.class.scheduler_pending?
+
+      self.class.set(wait: INTERVAL).perform_later
     end
   end
 end

@@ -1,6 +1,6 @@
 module Dam
   class AssetThumbnailJob < ApplicationJob
-    queue_as :default
+    queue_as { Dam.config.queue_name(:default) }
 
     def perform(asset_id)
       asset = Dam::Asset.find(asset_id)

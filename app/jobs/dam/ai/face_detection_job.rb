@@ -3,7 +3,7 @@
 module Dam
   module Ai
     class FaceDetectionJob < ApplicationJob
-      queue_as :default
+      queue_as { Dam.config.queue_name(:ai) }
 
       def perform(asset_id)
         Rails.logger.info "Dam::Ai::FaceDetectionJob: Starting for asset #{asset_id}"

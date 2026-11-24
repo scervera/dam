@@ -39,7 +39,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "streamio-ffmpeg", "~> 3.0"
   spec.add_dependency "exifr", "~> 1.3"
   spec.add_dependency "mini_exiftool", "~> 2.10"
-  # AI auto-tagging and face recognition (optional features, configured by ENV).
-  spec.add_dependency "ruby-openai", "~> 7.0"
+  # Face recognition (optional, configured by ENV).
   spec.add_dependency "aws-sdk-rekognition", "~> 1.0"
+  # AI auto-tagging SDKs are not dependencies: a host adds the one for its provider
+  # ("ruby-openai" for openai/openai_compatible, "anthropic" for anthropic). See README.
 end

@@ -21,12 +21,24 @@ Dam.configure do |config|
 
   # config.soft_delete_enabled = -> { true }
   # config.asset_retention_days = -> { 30 }
+
+  # Active Job queue per kind of DAM job (all :default unless set).
+  # config.queue_names = { ai: :ai, purge: :low_priority }
+
+  # Watched folders: :self_enqueue (the job re-enqueues itself every 30s; start it once)
+  # or :external (schedule Dam::WatchedFolderSchedulerJob yourself, e.g. config/recurring.yml).
+  # config.watched_folder_scheduler = :external
+
+  # AI auto-tagging is configured with ENV: DAM_AI_PROVIDER (openai, anthropic or
+  # openai_compatible), DAM_AI_MODEL, DAM_AI_API_KEY, DAM_AI_BASE_URL. Add the provider's
+  # gem ("ruby-openai" or "anthropic") to your Gemfile. Or pass your own adapter:
+  # config.ai_provider = MyVisionProvider.new
 end
 
 # Optional events (ActiveSupport::Notifications):
 #   "asset_created.dam"     { asset: }     e.g. usage metering
 #   "asset_destroying.dam"  { asset: }     remove rows that reference the asset first
-#   "ai_usage.dam"          { tenant:, input_tokens:, output_tokens: }
+#   "ai_usage.dam"          { tenant:, input_tokens:, output_tokens:, provider:, model: }
 #
 # ActiveSupport::Notifications.subscribe("asset_created.dam") do |event|
 #   Rails.logger.info "DAM asset created: #{event.payload[:asset].id}"

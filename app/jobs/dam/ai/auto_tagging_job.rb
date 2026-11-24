@@ -3,7 +3,7 @@
 module Dam
   module Ai
     class AutoTaggingJob < ApplicationJob
-      queue_as :default
+      queue_as { Dam.config.queue_name(:ai) }
 
       def perform(asset_id)
         asset = Dam::Asset.find_by(id: asset_id)
