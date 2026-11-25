@@ -25,7 +25,7 @@ The gem is distributed from GitHub, not RubyGems (a different gem named `dam` ma
 
 ```ruby
 # Gemfile
-gem "dam", git: "https://github.com/scervera/dam.git", tag: "v0.3.2"
+gem "dam", git: "https://github.com/scervera/dam.git", tag: "v0.3.3"
 ```
 
 ```bash

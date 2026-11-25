@@ -34,7 +34,7 @@ module Dam::Api
 
       def show
         @tag = tenant_scope(Dam::Tag).find_by(name: params[:id]) || tenant_scope(Dam::Tag).find(params[:id])
-        @assets = @tag.assets.includes(:user, :tags).page(params[:page]).per(params[:per_page] || 20)
+        @assets = @tag.assets.not_deleted.includes(:user, :tags).page(params[:page]).per(params[:per_page] || 20)
 
         render_success({
           tag: Dam::TagSerializer.flat(@tag),

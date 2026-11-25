@@ -115,6 +115,7 @@ class Dam::Api::V1::DropZonesController < Dam::Api::V1::BaseController
     per_page = params[:per_page] || 20
 
     @files = @drop_zone.drop_zone_files
+                      .with_active_asset
                       .includes(:asset, :uploaded_by)
                       .order(uploaded_at: :desc)
                       .offset((page.to_i - 1) * per_page.to_i)

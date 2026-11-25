@@ -4,10 +4,9 @@ module Dam
       def resolve
         return scope.none unless user
 
-        # Admins see all assets (org-wide assumption; fallback to all)
-        return scope.all if user.admin?
-
-        # Default org-wide visibility: show all non-deleted assets
+        # Soft-deleted assets are excluded for every role, admins included.
+        # They are reachable only through the recycle bin actions
+        # (recycle_bin, restore, purge), which look records up without this scope.
         scope.not_deleted
       end
     end

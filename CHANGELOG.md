@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3
+
+### Fixed
+- Admins (`user.admin?`) saw assets in the recycle bin in `GET /assets`, `GET /assets?q=` and `GET /assets/search`, and those assets were counted in `meta.total_count`. The asset policy scope now leaves out soft-deleted assets for every role. They are still available through `recycle_bin`, `restore` and `purge`.
+- For admins, `GET /assets/:id`, `update`, `destroy` and `lineage` now return 404 for a soft-deleted asset, as they already did for other roles. Deleting an asset that is already in the recycle bin no longer restarts its purge countdown.
+- For every role, soft-deleted assets no longer appear in smart folder assets and `asset_count`, `GET /tags/:id` and `Tag#asset_count`, collection `asset_count` and `asset_ids`, or drop zone `/files`, `recent_files` and `file_count`.
+
 ## 0.3.2
 
 ### Security

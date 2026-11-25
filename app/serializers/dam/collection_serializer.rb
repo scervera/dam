@@ -22,7 +22,7 @@ module Dam
     # Plain ids rather than a JSON:API relationship: asset data is served by
     # /api/v1/assets, and Dam::AssetSerializer is not a JSON:API serializer.
     attribute :asset_ids do |collection|
-      collection.asset_ids
+      collection.assets.not_deleted.ids
     end
 
     belongs_to :user, serializer: Dam::UserSerializer

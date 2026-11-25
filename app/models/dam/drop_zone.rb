@@ -40,11 +40,11 @@ module Dam
     end
 
     def recent_files(limit = 10)
-      drop_zone_files.includes(:asset, :uploaded_by).order(uploaded_at: :desc).limit(limit)
+      drop_zone_files.with_active_asset.includes(:asset, :uploaded_by).order(uploaded_at: :desc).limit(limit)
     end
 
     def file_count
-      drop_zone_files.count
+      drop_zone_files.with_active_asset.count
     end
 
     def subscriber_count

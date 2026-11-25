@@ -14,6 +14,8 @@ module Dam
     serialize :metadata, coder: JSON
 
     scope :recent, -> { order(uploaded_at: :desc) }
+    # Files whose asset is not in the recycle bin.
+    scope :with_active_asset, -> { joins(:asset).merge(Dam::Asset.not_deleted) }
     scope :by_drop_zone, ->(drop_zone) { where(drop_zone: drop_zone) }
     scope :by_uploader, ->(user) { where(uploaded_by: user) }
 
