@@ -109,7 +109,7 @@ module Dam
     private
 
     def assets_query(viewing_user)
-      base_query = ::Dam::Asset.where(tenant: tenant).joins(:tags).where(tags: { name: tag_names, tenant: tenant }).distinct
+      base_query = ::Dam::Asset.not_deleted.where(tenant: tenant).joins(:tags).where(tags: { name: tag_names, tenant: tenant }).distinct
 
       if match_logic == "all"
         tag_names.each do |tag_name|

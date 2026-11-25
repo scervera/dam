@@ -20,7 +20,7 @@ module Dam
 
     # Methods
     def asset_count
-      assets.count
+      assets.not_deleted.count
     end
 
     def normalized_name
