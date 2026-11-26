@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "jsonapi-serializer", "~> 2.2"
   spec.add_dependency "pundit", "~> 2.3"
   spec.add_dependency "kaminari", "~> 1.2"
-  spec.add_dependency "image_processing", "~> 1.2"
+  spec.add_dependency "image_processing", ">= 1.2", "< 3.0"
   spec.add_dependency "ruby-vips", "~> 2.2"
   spec.add_dependency "streamio-ffmpeg", "~> 3.0"
   spec.add_dependency "exifr", "~> 1.3"
